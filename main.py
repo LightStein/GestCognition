@@ -39,7 +39,7 @@ while capture.isOpened():
     #   ვქმნით მასკას (ანუ ვათეთრებთ იმ ობიექტს რომელიც გვჭირდება და დანარჩენს ვაშავებთ)
     #   ვუთითებთ კანის ფერის Range-ს   საწყისი  colorizer.org   საბოლოო
     mask2 = cv2.inRange(hsv, np.array([2, 0, 0]), np.array([20, 255, 255]))
-
+    
     #   კერნელის ინიციალიზაცია მორფოლოგიური ტრანსფორმაციისთვის
     #   შეამჩნევდით რომ ვიყენებთ numpy-ს (np) რითიც ვქმნით 5x5 მატრიცას სადაც ყველა წევრი არის 1
     #   ჯერ ვერ გავიგე 5x5 1-იანებით გავსებული კერნელი რას აკეთებს მაგრამ 3x3 100%-ით აბუნდოვნებს
@@ -53,6 +53,10 @@ while capture.isOpened():
     #   გვაქვს მრავალი მორფ.ტრანსფორმაცია მაგ: ეროზია(გამოსახულებას გარედან ჭამს), Opening და სხვა
     #   https://docs.opencv.org/trunk/d9/d61/tutorial_py_morphological_ops.html
     #               ყველა გამოსახულებას გაასქელებს
-    dilation = cv2.dilate(mask2, kernel, iterations=1)
+    dilation = cv2.dilate(mask2, kernel, iterations=1)  # iterations - რამდენჯერ უნდა გადაატაროს ეფექტი
     #              და ეროზიისას ზედმეტი წერტილები დაიკარგება
     erosion = cv2.erode(dilation, kernel, iterations=1)
+    
+    filtered = cv2.GaussianBlur(erosion, (3, 3), 0)
+    #   https://docs.opencv.org/trunk/d7/d4d/tutorial_py_thresholding.html
+    ret, thresh = cv2.threshold(filtered, 127, 255, 0)
