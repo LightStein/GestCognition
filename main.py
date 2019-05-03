@@ -66,6 +66,7 @@ while capture.isOpened():
     ret, thresh = cv2.threshold(filtered, 127, 255, 0)
 
     #   გამოვიტანოთ დამუშავებული გამოსახულება
+
     cv2.imshow("Thresholded", thresh)
 
     #   გამოსახულებაში ვპოულობთ კონტურებს
@@ -110,3 +111,4 @@ while capture.isOpened():
         #   აქ კი მივიღებთ array-ს სადაც თითო მნიშვნელობა გამოიყურება ასე:
         #   [ start point, end point, farthest point, approximate distance to farthest point ]
         defects = cv2.convexityDefects(contour, hull)
+
