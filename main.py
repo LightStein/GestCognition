@@ -1,8 +1,7 @@
-''
+'''
 ჯგუფის ნომერი: 4
 პროექტის თემა: Hand Gesture Recognition using Python and OpenCV
 ჯგუფის წევრები: ელენე კვარაცხელია, ანრი გიორგანაშვილი, ანა ონიანაშვილი, ანა ბერიშვილი
-
 '''
 
 import cv2  # გამოსახულების მისაღებად
@@ -147,15 +146,15 @@ while capture.isOpened():
             pass
     except:
         pass
-#   გამოსახულებები გამოგვაქვს ფანჯრებში
-   cv2.imshow("Gesture", frame)
-   #   ორი გამოსახულება გვერდიგვერდ ერთ ფანჯარაში
-   all_image = np.hstack((drawing, crop_image))
-   cv2.imshow('Contours', all_image)
+    #   გამოსახულებები გამოგვაქვს ფანჯრებში
+    cv2.imshow("Gesture", frame)
+    #   ორი გამოსახულება გვერდიგვერდ ერთ ფანჯარაში
+    all_image = np.hstack((drawing, crop_image))
+    cv2.imshow('Contours', all_image)
 
-   #   თუ დავაწვებით q-ს დაიხუროს პროგრამა
-   if cv2.waitKey(1) == ord('q'):
-       break
+    #   თუ დავაწვებით q-ს დაიხუროს პროგრამა
+    if cv2.waitKey(1) == ord('q'):
+        break
 
 capture.release()
 cv2.destroyAllWindows()
