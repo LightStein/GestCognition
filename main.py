@@ -1,4 +1,4 @@
-'''
+''
 ჯგუფის ნომერი: 4
 პროექტის თემა: Hand Gesture Recognition using Python and OpenCV
 ჯგუფის წევრები: ელენე კვარაცხელია, ანრი გიორგანაშვილი, ანა ონიანაშვილი, ანა ბერიშვილი
@@ -7,6 +7,7 @@
 
 import cv2  # გამოსახულების მისაღებად
 import numpy as np
+import pdb
 
 #   ვააქტიურებთ კამერას
 capture = cv2.VideoCapture(0) # 0 არის კამერის იდენტიფიკატორი (თუ მეორე კამერაც გვაქვს 1-ანს ჩავწერთ)
@@ -29,7 +30,7 @@ while capture.isOpened():
     
     #   ვაბუნდოვნებთ კადრს, რომ მარტივი დასამუშავებელი იყოს
     #                         source     x, y გაბუნდოვნების კოეფიციენტები
-    blur = cv2.GaussianBlur(crop_image, (3, 3), 0)  # 0 - BorderType
+    blur = cv2.GaussianBlur(crop_image, (3, 3), 0)  # 0 = BORDER_CONSTANT BorderType რომელიც ჩარჩოში სვავს გამოსახულებას
 
     #   BLUE-GREEN-RED -> HUE-SATURATION-VALUE  Colorspace Convertion
     #   BGR/RGB ფერების მოდელთან შედარებით HSV-ში ფერების Range-ის განსაზღვრა უფრო მარტივია
@@ -48,8 +49,7 @@ while capture.isOpened():
     #   მასკის შექმნისას (მე-40 ხაზი) რა თქმა უნდა ხელის გარდა ფონზე სხვა რაღაცეებიც შეიძლება გათეთრდეს
     #   იმიტომ რომ კანის ფერის range-ში სხვა ობიექტების ფერიც შეიძლება იყოს
     #   ანუ გამოსახულებაში გვექნება "ხმაური" ( background noise )
-    #   იმისთვის რომ მოვიშოროთ ეს "ხმაური" 
-    #   მორფოლოგიური ტრანსფორმაცია გვჭირდება
+    #   იმისთვის რომ მოვიშოროთ ეს "ხმაური" მორფოლოგიური ტრანსფორმაცია გვჭირდება
     #   გვაქვს მრავალი მორფ.ტრანსფორმაცია მაგ: ეროზია(გამოსახულებას გარედან ჭამს), Opening და სხვა
     #   https://docs.opencv.org/trunk/d9/d61/tutorial_py_morphological_ops.html
     #               ყველა გამოსახულებას გაასქელებს
@@ -58,10 +58,15 @@ while capture.isOpened():
     erosion = cv2.erode(dilation, kernel, iterations=1)
     
     filtered = cv2.GaussianBlur(erosion, (3, 3), 0)
+
     #   https://docs.opencv.org/trunk/d7/d4d/tutorial_py_thresholding.html
+    #   thresholding-ისას პიქსელის მნიშვნელობა თუ მეტია ზღვარზე მას გადაეწერება
+    #   ახალი მნიშვნელობა (A) თუ ნაკლებია (B)
+    #                           src    ზღვარი   A   B
     ret, thresh = cv2.threshold(filtered, 127, 255, 0)
-    
-    #   გამოგვაქვს დამუშავებული გამოსახულება
+
+    #   გამოვიტანოთ დამუშავებული გამოსახულება
+
     cv2.imshow("Thresholded", thresh)
 
     #   გამოსახულებაში ვპოულობთ კონტურებს
@@ -96,5 +101,14 @@ while capture.isOpened():
         #   -1 ნიშნავს რომ ყველა კონტური დაიხატოს
         #   სისქე თუ >= 0-ზე კონტური იხაზება, თუ არადა შეავსებს ფიგურას
         #                                            BGR      
-        cv2.drawContours(drawing, [contour], -1, (0, 255, 0), 0)  # სისქე
+        cv2.drawContours(drawing, [contour], -1, (0, 255, 0), 0) # სისქე
         cv2.drawContours(drawing, [hull], -1, (0, 0, 255), 0)
+
+        #   ვპოულობთ დეფექტებს (ჯუთხეებს)
+        #   https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_contours/py_contours_more_functions/py_contours_more_functions.html
+        hull = cv2.convexHull(contour, returnPoints=False)
+        
+        #   აქ კი მივიღებთ array-ს სადაც თითო მნიშვნელობა გამოიყურება ასე:
+        #   [ start point, end point, farthest point, approximate distance to farthest point ]
+        defects = cv2.convexityDefects(contour, hull)
+
