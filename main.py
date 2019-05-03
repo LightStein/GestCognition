@@ -60,3 +60,41 @@ while capture.isOpened():
     filtered = cv2.GaussianBlur(erosion, (3, 3), 0)
     #   https://docs.opencv.org/trunk/d7/d4d/tutorial_py_thresholding.html
     ret, thresh = cv2.threshold(filtered, 127, 255, 0)
+    
+    #   გამოგვაქვს დამუშავებული გამოსახულება
+    cv2.imshow("Thresholded", thresh)
+
+    #   გამოსახულებაში ვპოულობთ კონტურებს
+    #   RETR_TREE პოულობს კონტურებს კონტურებში (შვილებს, შვილიშვილებს და ა.შ)
+    #   CHAIN_APPROX_SIMPLE კი ამარტივებს კონტურებს (გადაბმის წერტილებს ნიშნავს მარტო)
+    #                                        src
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    try:
+        # ვპოულობთ ყველაზე დიდი ფართობის მქონე კონტურს 
+        # (კადრში ყველაზე დიდი ობიექტი ჩვენი ხელია)
+        contour = max(contours, key=lambda x: cv2.contourArea(x))
+
+        #   ვქმნით ჩარჩოს რომელიც ხელის ობიექტს შემოეკვრება
+        #   x, y - ზედა, მარცხენა წერტილის კოორდინატებია
+        #   w - სიგანე, h - სიმაღლე
+        x, y, w, h = cv2.boundingRect(contour)
+        #   A და B ერთმანეთის საპირისპირო კუთხეებია
+        #   0 - მძიმის მერე სიზუსტე
+        #                           A           B        ჩარჩოს ფერი   
+        cv2.rectangle(crop_image, (x, y), (x + w, y + h), (0, 0, 255), 0)
+
+        #   ხელზე გარსშემორტყმული კონტურის მისაღებად ვიყენებთ convexHull-ს
+        hull = cv2.convexHull(contour)
+
+        #   ვხატავთ კონტურებს ხელის გარშემო
+
+        #   ვქმნით ცარიელ სურათს (0-ებით გავსებულ მატრიცას)
+        #                   200, 200, 3(RGB), არაუარყოფითი int 0-255
+        drawing = np.zeros(crop_image.shape, np.uint8)
+        #   drawing-ში ჩახატავს კონტურებს, მწვანეს და წითელს
+        #   -1 ნიშნავს რომ ყველა კონტური დაიხატოს
+        #   სისქე თუ >= 0-ზე კონტური იხაზება, თუ არადა შეავსებს ფიგურას
+        #                                            BGR      
+        cv2.drawContours(drawing, [contour], -1, (0, 255, 0), 0)  # სისქე
+        cv2.drawContours(drawing, [hull], -1, (0, 0, 255), 0)
