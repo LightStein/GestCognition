@@ -6,8 +6,9 @@
 '''
 
 import cv2  # გამოსახულების მისაღებად
-import numpy as np
-import pdb
+import numpy as np # მატრიცული ინფორმაციის შენახვა დამუშავებისთვის
+import math # მათემატიკური გამოთვლების საწარმოებლად
+
 
 #   ვააქტიურებთ კამერას
 capture = cv2.VideoCapture(0) # 0 არის კამერის იდენტიფიკატორი (თუ მეორე კამერაც გვაქვს 1-ანს ჩავწერთ)
@@ -27,7 +28,7 @@ while capture.isOpened():
 
     #   მიღებული კადრიდან ვჭრით მხოლოდ იმ ადგილს სადაც ხელი ფიქსირდება
     crop_image = frame[100:300, 100:300]
-    
+
     #   ვაბუნდოვნებთ კადრს, რომ მარტივი დასამუშავებელი იყოს
     #                         source     x, y გაბუნდოვნების კოეფიციენტები
     blur = cv2.GaussianBlur(crop_image, (3, 3), 0)  # 0 = BORDER_CONSTANT BorderType რომელიც ჩარჩოში სვავს გამოსახულებას
@@ -57,7 +58,7 @@ while capture.isOpened():
     #              და ეროზიისას ზედმეტი წერტილები დაიკარგება
     erosion = cv2.erode(dilation, kernel, iterations=1)
     
-    filtered = cv2.GaussianBlur(erosion, (3, 3), 0)
+        filtered = cv2.GaussianBlur(erosion, (3, 3), 0)
 
     #   https://docs.opencv.org/trunk/d7/d4d/tutorial_py_thresholding.html
     #   thresholding-ისას პიქსელის მნიშვნელობა თუ მეტია ზღვარზე მას გადაეწერება
@@ -66,6 +67,7 @@ while capture.isOpened():
     ret, thresh = cv2.threshold(filtered, 127, 255, 0)
 
     #   გამოვიტანოთ დამუშავებული გამოსახულება
+
     cv2.imshow("Thresholded", thresh)
 
     #   გამოსახულებაში ვპოულობთ კონტურებს
@@ -110,3 +112,39 @@ while capture.isOpened():
         #   აქ კი მივიღებთ array-ს სადაც თითო მნიშვნელობა გამოიყურება ასე:
         #   [ start point, end point, farthest point, approximate distance to farthest point ]
         defects = cv2.convexityDefects(contour, hull)
+
+	 # კოსინუსების თეორემის გამოყენებით ვითვლით შორეული კუთხეების დახრილობას (თითის წვერებზე მონიშნულ წერტილებზე)
+        count_defects = 0
+        for i in range(defects.shape[0]):
+            s, e, f, d = defects[i, 0]
+            start = tuple(contour[s][0])
+            end = tuple(contour[e][0])
+            far = tuple(contour[f][0])
+
+            a = math.sqrt((end[0] - start[0]) ** 2 + (end[1] - start[1]) ** 2)
+            b = math.sqrt((far[0] - start[0]) ** 2 + (far[1] - start[1]) ** 2)
+            c = math.sqrt((end[0] - far[0]) ** 2 + (end[1] - far[1]) ** 2)
+            angle = (math.acos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c)) * 180) / 3.14
+
+            # თუ კუთხე < 90-ზე კიდეზე ვსავთ წერტილს და ვთვლით დეფექტში
+            if angle <= 90:
+                count_defects += 1
+                cv2.circle(crop_image, far, 1, [0, 0, 255], -1)
+
+            cv2.line(crop_image, start, end, [0, 255, 0], 2)
+
+            # დავბეჭდავთ თითების რაოდენობას
+        if count_defects == 0:
+            cv2.putText(frame, "ONE", (50, 50), cv2.FONT_HERSHEY_TRIPLEX, 2,(255,255,255),2)
+        elif count_defects == 1:
+            cv2.putText(frame, "TWO", (50, 50), cv2.FONT_HERSHEY_TRIPLEX, 2,(255,255,255), 2)
+        elif count_defects == 2:
+            cv2.putText(frame, "THREE", (5, 50), cv2.FONT_HERSHEY_TRIPLEX, 2,(255,255,255), 2)
+        elif count_defects == 3:
+            cv2.putText(frame, "FOUR", (50, 50), cv2.FONT_HERSHEY_TRIPLEX, 2,(255,255,255), 2)
+        elif count_defects == 4:
+            cv2.putText(frame, "FIVE", (50, 50), cv2.FONT_HERSHEY_TRIPLEX, 2,(255,255,255), 2)
+        else:
+            pass
+    except:
+        pass
