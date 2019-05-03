@@ -44,8 +44,7 @@ while capture.isOpened():
     
     #   კერნელის ინიციალიზაცია მორფოლოგიური ტრანსფორმაციისთვის
     #   შეამჩნევდით რომ ვიყენებთ numpy-ს (np) რითიც ვქმნით 5x5 მატრიცას სადაც ყველა წევრი არის 1
-    #   ჯერ ვერ გავიგე 5x5 1-იანებით გავსებული კერნელი რას აკეთებს მაგრამ 3x3 100%-ით აბუნდოვნებს
-    kernel = np.ones((5, 5))
+    
 
     #   მასკის შექმნისას (მე-40 ხაზი) რა თქმა უნდა ხელის გარდა ფონზე სხვა რაღაცეებიც შეიძლება გათეთრდეს
     #   იმიტომ რომ კანის ფერის range-ში სხვა ობიექტების ფერიც შეიძლება იყოს
@@ -105,7 +104,7 @@ while capture.isOpened():
         cv2.drawContours(drawing, [contour], -1, (0, 255, 0), 0) # სისქე
         cv2.drawContours(drawing, [hull], -1, (0, 0, 255), 0)
 
-        #   ვპოულობთ დეფექტებს (ჯუთხეებს)
+        #   ვპოულობთ დეფექტებს (კუთხეებს)
         #   https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_contours/py_contours_more_functions/py_contours_more_functions.html
         hull = cv2.convexHull(contour, returnPoints=False)
         
@@ -148,3 +147,15 @@ while capture.isOpened():
             pass
     except:
         pass
+#   გამოსახულებები გამოგვაქვს ფანჯრებში
+   cv2.imshow("Gesture", frame)
+   #   ორი გამოსახულება გვერდიგვერდ ერთ ფანჯარაში
+   all_image = np.hstack((drawing, crop_image))
+   cv2.imshow('Contours', all_image)
+
+   #   თუ დავაწვებით q-ს დაიხუროს პროგრამა
+   if cv2.waitKey(1) == ord('q'):
+       break
+
+capture.release()
+cv2.destroyAllWindows()
