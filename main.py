@@ -43,7 +43,7 @@ while capture.isOpened():
     
     #   კერნელის ინიციალიზაცია მორფოლოგიური ტრანსფორმაციისთვის
     #   შეამჩნევდით რომ ვიყენებთ numpy-ს (np) რითიც ვქმნით 5x5 მატრიცას სადაც ყველა წევრი არის 1
-    
+    kernel = np.ones((5, 5))
 
     #   მასკის შექმნისას (მე-40 ხაზი) რა თქმა უნდა ხელის გარდა ფონზე სხვა რაღაცეებიც შეიძლება გათეთრდეს
     #   იმიტომ რომ კანის ფერის range-ში სხვა ობიექტების ფერიც შეიძლება იყოს
@@ -56,7 +56,7 @@ while capture.isOpened():
     #              და ეროზიისას ზედმეტი წერტილები დაიკარგება
     erosion = cv2.erode(dilation, kernel, iterations=1)
     
-        filtered = cv2.GaussianBlur(erosion, (3, 3), 0)
+    filtered = cv2.GaussianBlur(erosion, (3, 3), 0)
 
     #   https://docs.opencv.org/trunk/d7/d4d/tutorial_py_thresholding.html
     #   thresholding-ისას პიქსელის მნიშვნელობა თუ მეტია ზღვარზე მას გადაეწერება
@@ -65,7 +65,6 @@ while capture.isOpened():
     ret, thresh = cv2.threshold(filtered, 127, 255, 0)
 
     #   გამოვიტანოთ დამუშავებული გამოსახულება
-
     cv2.imshow("Thresholded", thresh)
 
     #   გამოსახულებაში ვპოულობთ კონტურებს
@@ -154,7 +153,5 @@ while capture.isOpened():
 
     #   თუ დავაწვებით q-ს დაიხუროს პროგრამა
     if cv2.waitKey(1) == ord('q'):
-        break
-
-capture.release()
-cv2.destroyAllWindows()
+        capture.release()
+        cv2.destroyAllWindows()
