@@ -110,7 +110,7 @@ while capture.isOpened():
         #   [ start point, end point, farthest point, approximate distance to farthest point ]
         defects = cv2.convexityDefects(contour, hull)
 
-	 # კოსინუსების თეორემის გამოყენებით ვითვლით შორეული კუთხეების დახრილობას (თითის წვერებზე მონიშნულ წერტილებზე)
+	 # კოსინუსების თეორემის გამოყენებით ვითვლით კუთხეების დახრილობას (თითებს შორის)
         count_defects = 0
         for i in range(defects.shape[0]):
             s, e, f, d = defects[i, 0]
@@ -123,7 +123,7 @@ while capture.isOpened():
             c = math.sqrt((end[0] - far[0]) ** 2 + (end[1] - far[1]) ** 2)
             angle = (math.acos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c)) * 180) / 3.14
 
-            # თუ კუთხე < 90-ზე კიდეზე ვსავთ წერტილს და ვთვლით დეფექტში
+            # თუ კუთხე < 90-ზე კიდეზე ვსავთ წერტილს ვთვლით დეფექტში
             if angle <= 90:
                 count_defects += 1
                 cv2.circle(crop_image, far, 1, [0, 0, 255], -1)
