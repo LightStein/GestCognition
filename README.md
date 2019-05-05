@@ -1,6 +1,6 @@
 # GestCognition
  ეს არის Python3-ში დაწერილი პროგრამა, რომელსაც შეუძლია ხელის თითების დათვლა...
-## ავტორები
+## პროექტზე მუშაობდნენ
 BTU-ს პირველკურსელი სტუდენტები: 
 - ელენე კვარაცხელია
 - ანრი გიორგანაშვილი
@@ -11,4 +11,9 @@ BTU-ს პირველკურსელი სტუდენტები:
 - numpy
 - math
 ## აღწერა
-კოდის ყველა წერტილი დეტალურადაა გარჩეული , გამოდგება სასწავლო პროცესში საინტეგრირებლად
+კოდის ყველა წერტილი დეტალურადაა გარჩეული , გამოდგება სასწავლო პროცესში საინტეგრირებლად~
+### მუშაობის პრინციპი
+##### გაფილტვრა
+![Filtering Algorithm](https://raw.githubusercontent.com/LightStein/GestCognition/master/pres/Filter-Algorithm.jpg)
+##### ხელის ამოცნობა და თითების დათვლა
+![Filtering Algorithm](https://raw.githubusercontent.com/LightStein/GestCognition/master/pres/Finger-counting-algorithm.jpg)
